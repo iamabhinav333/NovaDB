@@ -1,7 +1,7 @@
 # NovaDB
 
 NovaDB is a learning-focused database engine project in C++.
-This stage implements **Level 0 (Foundation)**, **Level 1 (Disk Manager)**, and **Level 2 (Page Manager)**.
+This stage implements **Level 0 (Foundation)** through **Level 11 (Query Optimization)**.
 
 ## Project Structure
 
@@ -46,6 +46,72 @@ This stage implements **Level 0 (Foundation)**, **Level 1 (Disk Manager)**, and 
   - flush page(s)
 - `IPageIO` abstraction keeps page layer independent from disk details
 
+### Level 3 - Record Storage
+- Structured record serialization:
+  - `Record { key, value }`
+  - `serialize_record` and `deserialize_record`
+- Slotted-page record storage (`RecordPage`) with:
+  - insert
+  - delete
+  - update
+  - search by key
+  - free-space accounting inside a fixed page
+
+### Level 4 - Table Manager
+- Multiple-table support through `TableManager`
+- Metadata catalog persisted by `Catalog` (`catalog.meta`)
+- Table operations:
+  - create
+  - open
+  - list
+  - delete
+
+### Level 5 - Buffer Pool
+- `BufferPoolManager` caches frequently used pages in memory
+- LRU page replacement for unpinned pages
+- Dirty-page flushing:
+  - `flush_page`
+  - `flush_all`
+  - flush-on-eviction when needed
+
+### Level 6 - B+ Tree Index
+- In-memory B+ tree index with explicit node structure
+- Insert, search, delete, and range queries
+- Node split and merge behavior preserved by tree rebuilds after mutations
+
+### Level 7 - Query Layer
+- Simple command parser and dispatcher
+- Supported commands:
+  - `INSERT table key value`
+  - `FIND table key`
+  - `UPDATE table key value`
+  - `DELETE table key`
+  - `RANGE table start end`
+- Transaction commands:
+  - `BEGIN`
+  - `COMMIT`
+  - `ROLLBACK`
+
+### Level 8 - Transactions
+- Transaction state tracking via `TransactionManager`
+- Snapshot-based rollback in the query layer
+- Commit/rollback states are visible after completion
+
+### Level 9 - Write Ahead Logging
+- Append log records before applying data changes
+- Replay log files during restart
+- Recover incomplete transactions via WAL-backed replay
+
+### Level 10 - Concurrency
+- Shared and exclusive lock modes
+- Timeout-based lock manager
+- Basic contention handling for multiple users
+
+### Level 11 - Query Optimization
+- Simple plan selection based on table statistics
+- Prefer indexes for point lookups and narrow ranges
+- Fall back to scans when no index is present or ranges are wide
+
 ## Build
 
 ```powershell
@@ -67,4 +133,4 @@ ctest --test-dir build --output-on-failure
 
 ## Notes
 
-See `docs/architecture.md` for details about the design and why fixed-size pages are central to database engines.
+See `docs/architecture.md` for architecture details for Levels 0 through 11.

@@ -13,6 +13,18 @@ add_library(novadb STATIC
     src/disk_manager.cpp
     src/page.cpp
     src/page_manager.cpp
+    src/record.cpp
+    src/record_page.cpp
+    src/catalog.cpp
+    src/table_manager.cpp
+    src/buffer_pool.cpp
+    src/bplustree.cpp
+    src/query_engine.cpp
+    src/transaction.cpp
+    src/log_record.cpp
+    src/write_ahead_log.cpp
+    src/lock_manager.cpp
+    src/query_optimizer.cpp
 )
 
 target_include_directories(novadb
